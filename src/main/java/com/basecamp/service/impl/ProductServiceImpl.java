@@ -13,10 +13,7 @@ import org.springframework.util.StringUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -63,6 +60,42 @@ public class ProductServiceImpl implements ProductService {
         taskService.stopExecutorService();
 
         log.info("Product executor stopped.");
+    }
+
+    public void runOfCockroach(int countThread) {
+        ExecutorService executorService = Executors.newFixedThreadPool(countThread);
+        for (int i = 0; i < countThread; i++) {
+            executorService.execute(new RunningCockroach(i));
+        }
+        executorService.shutdown();
+    }
+
+    private class RunningCockroach extends Thread {
+
+        private final int max = 5;
+        private int id;
+        private int countSteps = 0;
+
+        RunningCockroach(int id) {
+            this.id = id + 1;
+        }
+
+        public void run() {
+            while (countSteps <= max) {
+                countSteps += 1;
+                if (countSteps == max) {
+                    System.out.println("Thread #" + id + " steps " + countSteps + " is finished!!!");
+                } else if (countSteps > max) {
+                } else {
+                    System.out.println("Thread: id " + id + ", Steps " + countSteps);
+                }
+                try {
+                    TimeUnit.MILLISECONDS.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     private void validateId(String id) {

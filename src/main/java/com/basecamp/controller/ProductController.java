@@ -44,12 +44,13 @@ public class ProductController {
                 .status(HttpStatus.ACCEPTED).build();
     }
 
-    @GetMapping(value = "/homework", produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity homework() {
+    @PutMapping(value = "/countThread")
+    public ResponseEntity handleProductInfo(@RequestParam(value = "thread", required = false) Integer countThread) {
 
+        productService.runOfCockroach(countThread);
 
-
-        return ResponseEntity.ok().build();
+        return ResponseEntity
+                .status(HttpStatus.ACCEPTED).build();
     }
 
 }
